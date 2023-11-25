@@ -15,6 +15,7 @@ addLayer("g", {
     exponent() {
         exp = new Decimal(0.5)
         if (player.g.points.gte(1e8) || hasUpgrade("g",35)) exp = exp.add(-0.25)
+        if (hasUpgrade("p",45)) exp = exp.add(0.02)
         if (inChallenge("p",12)) exp = exp.div(30)
         return exp
     }, // Prestige currency exponent
@@ -42,7 +43,7 @@ addLayer("g", {
         {key: "g", description: "G: Reset for genesis", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     doReset(resettingLayer) {
-        let keep = [];
+        let keep = [tmp.g.upgrades[35]];
         if (hasMilestone("q",1) && resettingLayer=="q" || hasMilestone("p",1)) keep.push("upgrades")
         if (layers[resettingLayer].row > this.row) layerDataReset("g", keep)
     },
@@ -136,7 +137,7 @@ addLayer("g", {
         },
         24:{
             title:"Low energy level",
-            description(){return "Boost genesis gain based on our points."},
+            description(){return "Boost genesis gain based on your points."},
             cost(){return new Decimal(45)},
             unlocked(){
                 return hasUpgrade("g",23)
@@ -174,7 +175,7 @@ addLayer("g", {
         },
         33:{
             title:"Unreachable energy level",
-            description(){return "Triple point gain"},
+            description(){return "Triple point gain."},
             cost(){return new Decimal(3e7)},
             unlocked(){
                 return hasUpgrade("g",32)
@@ -220,6 +221,7 @@ addLayer("q", {
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent() {
         exp = new Decimal(0.15)
+        if (hasUpgrade("p",45)) exp = exp.add(0.02)
         return exp
     }, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
@@ -229,6 +231,8 @@ addLayer("q", {
         if (hasUpgrade("q",31)) mult = mult.times(tmp.q.powerEffofcharm)
         if (hasUpgrade("q",42)) mult = mult.times(upgradeEffect("q",42))
         if (hasUpgrade("q",53)) mult = mult.times(upgradeEffect("q",53))
+        if (hasUpgrade("p",43)) mult = mult.times(upgradeEffect("p",43))
+        if (hasUpgrade("p",13)) mult = mult.times(2)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -274,6 +278,7 @@ addLayer("q", {
         if (!hasUpgrade("q",21)) return new Decimal(0);
         let eff = Decimal.pow(player.q.upquark,this.effBase()).pow(0.3).max(0);
         if (hasUpgrade("q",35)) eff = eff.times(upgradeEffect("q",35))
+        if (hasUpgrade("p",44)) eff = eff.times(upgradeEffect("p",44))
         if (hasUpgrade("q",51)) eff = eff.times(tmp.q.powerEffoftop)
         return eff;
     },
@@ -304,7 +309,7 @@ addLayer("q", {
         return exp;
     },
     powerEffofu() {
-        if (!player.q.unlocked && player.q.upquark.gt(0)) return new Decimal(1);
+        if (!player.q.unlocked && player.q.upquark.gt(0) || inChallenge("p",21)) return new Decimal(1);
         let pow = player.q.upquark.add(1).pow(this.powerExp());
         if (hasUpgrade("q",51)) pow = pow.times(tmp.q.powerEffofbottom)
         if (hasUpgrade("p",24)) pow = pow.times(upgradeEffect("p",24))
@@ -312,7 +317,7 @@ addLayer("q", {
         return pow
     },
     powerEffofd() {
-        if (!player.q.unlocked && player.q.upquark.gt(0)) return new Decimal(1);
+        if (!player.q.unlocked && player.q.upquark.gt(0) || inChallenge("p",21)) return new Decimal(1);
         let pow = player.q.downquark.add(1).pow(this.powerExp());
         if (hasUpgrade("q",25)) pow = pow.times(tmp.q.powerEffofstr);
         if (hasUpgrade("q",51)) pow = pow.times(tmp.q.powerEffofbottom)
@@ -355,7 +360,7 @@ addLayer("q", {
         }
         if (layers[resettingLayer].row > this.row) layerDataReset("q", keep)
     },
-    passiveGeneration() {return hasMilestone("p",2) ? 0.8 : 0},
+    passiveGeneration() {return hasMilestone("p",2) ? 0.8 : hasMilestone("q",2)? 0.15: 0},
     tabFormat: ["main-display",
     "prestige-button",
     ["display-text",
@@ -395,6 +400,11 @@ addLayer("q", {
             effectDescription: "Keep genesis upgrades on quark reset.",
             done() { return player.q.points.gte(5) && hasUpgrade("g",35) }
         },
+        2: {
+            requirementDescription: "10 quarks",
+            effectDescription: "Auto generate quark.",
+            done() { return player.q.points.gte(10) }
+        },
     },
     upgrades:{
         rows:12,
@@ -427,7 +437,7 @@ addLayer("q", {
         },
         14:{
             title:"Quark enhance",
-            description(){return "Double quark gain"},
+            description(){return "Double quark gain."},
             cost(){return new Decimal(5)},
             unlocked(){
                 return hasUpgrade("q",13)
@@ -435,7 +445,7 @@ addLayer("q", {
         },
         15:{
             title:"Major boost of this row III",
-            description(){return "upquark and downquark boost each other."},
+            description(){return "boost upquark and downquark based on themselves."},
             cost(){return new Decimal(10)},
             unlocked(){
                 return hasUpgrade("q",14)
@@ -453,7 +463,7 @@ addLayer("q", {
         },
         22:{
             title:"Strange boost",
-            description(){return "Point boost quark gain"},
+            description(){return "Points boost quark gain."},
             cost(){return new Decimal(20)},
             unlocked(){
                 return hasUpgrade("q",21)
@@ -483,7 +493,7 @@ addLayer("q", {
         },
         25:{
             title:"Major boost of this row IV",
-            description(){return "strange quark boost downquark's effect."},
+            description(){return "strangequark boost downquark's effect."},
             cost(){return new Decimal(300)},
             unlocked(){
                 return hasUpgrade("q",24)
@@ -517,7 +527,7 @@ addLayer("q", {
         },
         34:{
             title:"Charmful part",
-            description(){return "4 quarks boost genesis gain"},
+            description(){return "4 quarks boost genesis gain."},
             cost(){return new Decimal(50000)},
             unlocked(){
                 return hasUpgrade("q",33)
@@ -527,7 +537,7 @@ addLayer("q", {
         },
         35:{
             title:"Major boost of this row V",
-            description(){return"strange quark and charm quark boost each other."},
+            description(){return"boost strange quark and charm quark based on themselves."},
             unlocked(){
                 return hasUpgrade("q",34)
             },
@@ -571,7 +581,7 @@ addLayer("q", {
         },
         45:{
             title:"Major boost of this row VI",
-            description(){return "\"quark protection\"'s formula is better."},
+            description(){return "\"Quark protection\"'s formula is better."},
             unlocked(){
                 return hasUpgrade("q",44)
             },
@@ -663,7 +673,7 @@ addLayer("q", {
         },
         65:{
             title:"Truth of quarks",
-            description(){return "Unlock proton, genesis gain is raised to ^1.1."},
+            description(){return "Unlock proton, genesis gain is raised to ^1.1"},
             unlocked(){
                 return hasUpgrade("q",63)
             },
@@ -676,7 +686,7 @@ addLayer("p", {
     symbol: "P", // This appears on the layer's node. Default is the id with the first letter capitalized
     position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
     startData() { return {
-        unlocked: true,
+        unlocked: false,
 		points: new Decimal(0),
     }},
     color: "#1111EF",
@@ -693,12 +703,15 @@ addLayer("p", {
         mult = new Decimal(1)
         if (hasUpgrade("p",15)) mult = mult.times(2)
         if (hasUpgrade("p",31)) mult = mult.times(2)
+        if (hasUpgrade("p",41)) mult = mult.times(upgradeEffect("p",41))
+        if (hasUpgrade("p",42)) mult = mult.times(upgradeEffect("p",42))
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
         pow = new Decimal(1)
         return pow
     },
+    passiveGeneration() {return hasChallenge("p",21) ? 0.2 : 0},
     row: 2, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
         {key: "p", description: "P: Reset for proton", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
@@ -725,7 +738,7 @@ addLayer("p", {
         },
         2: {
             requirementDescription: "3 proton",
-            effectDescription: "Auto generate quark, increase the speed of genesis generation.",
+            effectDescription: "Increase the speed of genesis generation and quark generation.",
             done() { return player.p.points.gte(3) }
         },
         3: {
@@ -817,7 +830,7 @@ addLayer("p", {
         },
         25:{
             title:"Proton boost V",
-            description(){return "Point generation is raised to ^1.05."},
+            description(){return "Point generation is raised to ^1.05 "},
             unlocked(){
                 return hasChallenge("p",11)
             },
@@ -825,7 +838,7 @@ addLayer("p", {
         },
         31:{
             title:"Proton boost VI",
-            description(){return "Double proton gain"},
+            description(){return "Double proton gain."},
             unlocked(){
                 return hasChallenge("p",12)
             },
@@ -857,17 +870,65 @@ addLayer("p", {
         },
         35:{
             title:"Proton boost X",
-            description(){return "remove the divider of \"waiting\""},
+            description(){return "remove the divisor of \"waiting\"."},
             unlocked(){
                 return hasChallenge("p",12)
             },
             cost(){return new Decimal(20)},
         },
+        41:{
+            title:"Proton boost XI",
+            description(){return "Boost proton gain based on you points."},
+            unlocked(){
+                return hasChallenge("p",21)
+            },
+            cost(){return new Decimal(1000)},
+            effect(){return player.points.pow(5).add(1).log10().pow(0.2).max(1)},
+            effectDisplay(){return `x${format(upgradeEffect("p",41))}`}
+        },
+        42:{
+            title:"Proton boost XII",
+            description(){return "Boost proton gain based on you bottomquark."},
+            unlocked(){
+                return hasChallenge("p",21)
+            },
+            cost(){return new Decimal(1000)},
+            effect(){return player.q.bottom.add(1).log10().pow(0.35).max(1)},
+            effectDisplay(){return `x${format(upgradeEffect("p",42))}`}
+        },
+        43:{
+            title:"Proton boost XIII",
+            description(){return "Boost quark gain based on \"Quark boost +++\"'s effect."},
+            unlocked(){
+                return hasChallenge("p",21)
+            },
+            cost(){return new Decimal(1000)},
+            effect(){return upgradeEffect("q",61).pow(2).div(6).add(1)},
+            effectDisplay(){return `x${format(upgradeEffect("p",43))}`}
+        },
+        44:{
+            title:"Proton boost XIV",
+            description(){return "Boost strangequark gain based on your proton"},
+            unlocked(){
+                return hasChallenge("p",21)
+            },
+            cost(){return new Decimal(1000)},
+            effect(){return player.p.points.pow(0.3).add(1).log10().pow(1.2).times(2).add(1)},
+            effectDisplay(){return `x${format(upgradeEffect("p",44))}`}
+        },
+        45:{
+            title:"Proton boost XV",
+            description(){return "Increase genesis and quark gain base."},
+            unlocked(){
+                return hasChallenge("p",21)
+            },
+            cost(){return new Decimal(1000)},
+        },
     },
     challenges:{
         11: {
             name: "No idle",
-            challengeDescription: "You lose 10% of your genesis gain on reset every second, genesis generation are disabled.",
+            challengeDescription: "You lose 10% of your genesis gain on reset every second, genesis generation is disabled.",
             canComplete: function() {return player.points.gte(5e36)},
             goalDescription(){return "5e36 points"},
             rewardDescription(){return "Unlock 5 proton upgrades."},
@@ -883,6 +944,16 @@ addLayer("p", {
             rewardDescription(){return "Unlock 5 proton upgrades."},
             unlocked() {
                 return hasUpgrade("p",21)&&hasUpgrade("p",22)&&hasUpgrade("p",23)&&hasUpgrade("p",24)&&hasUpgrade("p",25)
+            }
+        },
+        21: {
+            name: "Unorganize quarks",
+            challengeDescription: "Effect of upquark and downquark are disabled.",
+            canComplete: function() {return player.points.gte(1e45)},
+            goalDescription(){return "1e45 points"},
+            rewardDescription(){return "Unlock 5 proton upgrades. Auto generate proton."},
+            unlocked() {
+                return hasUpgrade("p",31)&&hasUpgrade("p",32)&&hasUpgrade("p",33)&&hasUpgrade("p",34)&&hasUpgrade("p",35)
             }
         },
     }
@@ -942,7 +1013,13 @@ addLayer("a", {
         },
     update(diff) {	// Added this section to call adjustNotificationTime every tick, to reduce notification timers
         adjustNotificationTime(diff);
-    },	
-}
+    },
+    },
+    tabFormat: [
+        "blank", 
+        ["display-text", function() { return "Achievements: "+player.a.achievements.length+"/8" }], 
+        "blank", "blank",
+        "achievements",
+    ],
 })
 
