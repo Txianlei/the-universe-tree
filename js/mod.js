@@ -42,7 +42,7 @@ function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
 
-	let gain = new Decimal(0.01)
+	let gain = new Decimal(0.1)
 	//ADD
 	if (hasUpgrade("g",12)) gain = gain.add(0.02)
 	if (hasUpgrade("g",13)) gain = gain.add(0.05)
@@ -56,11 +56,14 @@ function getPointGen() {
 	if (hasUpgrade("g",32)) gain = gain.times(upgradeEffect("g",32))
 	if (hasUpgrade("q",33)) gain = gain.times(upgradeEffect("q",33))
 	if (hasUpgrade("q",55)) gain = gain.times(upgradeEffect("q",55))
+	if (hasUpgrade("p",11)) gain = gain.times(10)
+	if (hasUpgrade("p",21)) gain = gain.times(upgradeEffect("p",21))
 	if (player.q.unlocked) gain = gain.times(tmp.q.powerEffofu)
 
 
 	//POWER
 	if(hasUpgrade("q",41)) gain = gain.pow(1.15)
+	if(hasUpgrade("p",34)) gain = gain.pow(1.1)
 
 	return gain
 }
