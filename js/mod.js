@@ -1,5 +1,5 @@
 let modInfo = {
-	name: "The univrese Tree",
+	name: "The universe Tree",
 	id: "mymod",
 	author: "user incremental",
 	pointsName: "points",
@@ -63,7 +63,7 @@ function getPointGen() {
 
 	//POWER
 	if(hasUpgrade("q",41)) gain = gain.pow(1.15)
-	if(hasUpgrade("p",34)) gain = gain.pow(1.1 )
+	if(hasUpgrade("p",34)) gain = gain.pow(1.1)
 
 	return gain
 }
@@ -78,7 +78,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal("1F9e15"))
+	return player.points.gte(new Decimal("eee35"))
 }
 
 

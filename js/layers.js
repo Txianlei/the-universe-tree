@@ -360,7 +360,7 @@ addLayer("q", {
         }
         if (layers[resettingLayer].row > this.row) layerDataReset("q", keep)
     },
-    passiveGeneration() {return hasMilestone("p",2) ? 0.8 : hasMilestone("q",2)? 0.15: 0},
+    passiveGeneration() {return hasMilestone("p",2) ? 1 : hasMilestone("q",2)? 0.5: 0},
     tabFormat: ["main-display",
     "prestige-button",
     ["display-text",
