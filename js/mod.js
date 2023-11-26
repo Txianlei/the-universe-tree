@@ -1,5 +1,5 @@
 let modInfo = {
-	name: "The universe Tree",
+	name: "A piece of s**t",
 	id: "mymod",
 	author: "user incremental",
 	pointsName: "points",
@@ -42,7 +42,7 @@ function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
 
-	let gain = new Decimal(0.1)
+	let gain = new Decimal(1)
 	//ADD
 	if (hasUpgrade("g",12)) gain = gain.add(0.02)
 	if (hasUpgrade("g",13)) gain = gain.add(0.05)
@@ -58,12 +58,15 @@ function getPointGen() {
 	if (hasUpgrade("q",55)) gain = gain.times(upgradeEffect("q",55))
 	if (hasUpgrade("p",11)) gain = gain.times(10)
 	if (hasUpgrade("p",21)) gain = gain.times(upgradeEffect("p",21))
+	if (hasUpgrade("p",51)) gain = gain.times(upgradeEffect("p",51))
 	if (player.q.unlocked) gain = gain.times(tmp.q.powerEffofu)
 
 
 	//POWER
 	if(hasUpgrade("q",41)) gain = gain.pow(1.15)
 	if(hasUpgrade("p",34)) gain = gain.pow(1.1)
+	if(inChallenge("p",31)) gain = gain.pow(0.666)
+	if (player.e.onpointmode) gain = gain.pow(tmp.e.effofpointcharge)
 
 	return gain
 }
