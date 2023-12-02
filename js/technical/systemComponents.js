@@ -1,4 +1,4 @@
-var systemComponents = {
+ var systemComponents = {
 	'tab-buttons': {
 		props: ['layer', 'data', 'name'],
 		template: `
