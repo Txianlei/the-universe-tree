@@ -43,6 +43,7 @@ addLayer("g", {
         pow = new Decimal(1)
         if (hasUpgrade("q",65)) pow = pow.times(1.1)
         if (hasUpgrade("p",25)) pow = pow.times(1.05)
+        if (player.e.ongenesisexmode&&hasUpgrade("n",22)) pow = pow.times(1.25)
         if (player.e.ongenesismode) pow = pow.times(tmp.e.effofgenesischarge)
         return pow
     },
@@ -57,6 +58,9 @@ addLayer("g", {
     },
     layerShown(){return true},
     tabFormat: ["main-display",
+    ["display-text",
+    function() {return "YOU NEED TO DO A HARD RESET BEFORE YOU GETTING STARTED!"},
+        {}],
     "prestige-button",
     "blank",
     ["display-text",
@@ -140,7 +144,7 @@ addLayer("g", {
             unlocked(){
                 return hasUpgrade("g",22)
             },
-            effect(){return player.points.add(1).log10().pow(3).pow(2).div(hasUpgrade("p",35) ? 1 : hasUpgrade("g",25) ? 35:100).add(1).min(hasUpgrade("q",23) ? new Decimal(1000).times(upgradeEffect("q",23)) : 1000)},
+            effect(){return player.points.add(1).log10().pow(3).pow(2).div(hasUpgrade("p",35) ? 1 : hasUpgrade("g",25) ? 35:100).add(1).pow(hasUpgrade("n",21)&&player.e.onpointexmode ? 1.8 :1).min(hasUpgrade("q",23) ? new Decimal(1000).times(upgradeEffect("q",23)).pow(hasUpgrade("n",21)&&player.e.onpointexmode ? 1.8 :1) : 1000)},
             effectDisplay(){return `x${format(upgradeEffect("g",23))}`}
         },
         24:{
@@ -252,6 +256,7 @@ addLayer("q", {
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
         let pow = new Decimal(1)
+        if (player.e.onquarkexmode&&hasUpgrade("n",24)) pow = pow.times(1.2)
         if (player.e.onquarkmode) pow = pow.times(tmp.e.effofquarkcharge)
         return pow
     },
@@ -771,7 +776,7 @@ addLayer("p", {
     milestones:{
         0: {
             requirementDescription: "1 proton",
-            effectDescription: "quark resets nothing.",
+            effectDescription: "Quark resets nothing.",
             done() { return player.p.points.gte(1) }
         },
         1: {
@@ -1065,7 +1070,7 @@ addLayer("p", {
         },
         64:{
             title:"Electron boost IX",
-            description(){return "\"Electron boost III\" affects to bottomquark and \"Proton boost III\" affects to genesis gain."},
+            description(){return "\"Electron boost III\" affects bottomquark and \"Proton boost III\" affects to genesis gain."},
             unlocked(){
                 return hasUpgrade("p",63)
             },
@@ -1175,7 +1180,7 @@ addLayer("p", {
         },
         92:{
             title:"Defence of quarks",
-            description(){return "Charge all types of quarks won't reset these quarks."},
+            description(){return "Charging all types of quarks won't reset these quarks."},
             unlocked(){
                 return hasUpgrade("p",91)
             },
@@ -1183,7 +1188,7 @@ addLayer("p", {
         },
         93:{
             title:"Affact chaos",
-            description(){return "\"Electron boost XIV\" affects to quark's production, \"Proton boost XII\" will divde electron price, \"Electron boost III\" affects to proton."},
+            description(){return "\"Electron boost XIV\" affects quark's production, \"Proton boost XII\" will divde electron price, \"Electron boost III\" affects proton."},
             unlocked(){
                 return hasUpgrade("p",92)
             },
@@ -1205,7 +1210,7 @@ addLayer("p", {
             unlocked(){
                 return hasUpgrade("p",93)
             },
-            cost(){return new Decimal(1e66 )},
+            cost(){return new Decimal(1e66)},
         },
     },
     challenges:{
@@ -1261,7 +1266,7 @@ addLayer("p", {
         },
         32: {
             name: "Very expensive things",
-            challengeDescription: "The reqiurement of genesis and quark are much much increased.",
+            challengeDescription: "The reqiurements of genesis and quark are much much increased.",
             canComplete: function() {return player.points.gte(1e78)},
             goalDescription(){return "1e78 points"},
             rewardDescription(){return "You can charge electron into 3 new things, unlock a proton milestone."},
@@ -1286,7 +1291,7 @@ addLayer("p", {
             goalDescription(){return "1e185 points"},
             rewardDescription(){return "The effect of \"Changing\" is raised to ^1.5"},
             unlocked() {
-                return hasUpgrade("p",75)
+                return hasUpgrade("p",85)
             }
         },
     }
@@ -1335,6 +1340,7 @@ addLayer("e", {
     gainExp() { // Calculate the exponent on main currency from bonuses
         pow = new Decimal(1)
         if (hasUpgrade("p",95)) pow = pow.times(2)
+        if (hasUpgrade("n",25)) pow = pow.div(upgradeEffect("n",25))
         return pow
     },
     row: 2, // Row the layer is in on the tree (0 is the first row)
@@ -1362,15 +1368,15 @@ addLayer("e", {
         return eff
     },
     effofpointexcharge(){
-        let eff = player.e.points.times(hasUpgrade("p",83)? 0.4 : 0.35)
+        let eff = hasUpgrade("n",21) ? player.e.points.add(player.n.score).pow(4).add(1).log10().pow(3) : player.e.points.times(hasUpgrade("p",83)? 0.4 : 0.35)
         return eff
     },
     effofgenesisexcharge(){
-        let eff = player.e.points.add(hasUpgrade("p",85) ? 8 : 1).log10().pow(0.7).div(125)
+        let eff = hasUpgrade("n",22) ? player.e.points.times(player.n.score).add(1).log10().add(1).ln().pow(2.2222).add(1).div(25).max(0) : player.e.points.add(hasUpgrade("p",85) ? 8 : 1).log10().pow(0.7).div(125)
         return eff
     },
     effofquarkexcharge(){
-        let eff = player.e.points.add(hasUpgrade("p",85) ? 8 : 1).log10().pow(0.75).div(135)
+        let eff = hasUpgrade("n",24) ? player.e.points.times(player.n.score).add(1).ln().pow(0.35).div(5).pow(2.333).add(1).log10().max(0) : player.e.points.add(hasUpgrade("p",85) ? 8 : 1).log10().pow(0.75).div(135)
         return eff
     },
     effofelectroncharge(){
@@ -1395,6 +1401,7 @@ addLayer("e", {
         if (hasMilestone("p",5)) limit = 2
         if (hasMilestone("p",6)) limit = 3
         if (hasUpgrade("n",15)) limit = 4
+        if (hasUpgrade("n",23)) limit = 5
         return limit
     },
     resetsNothing() {return hasMilestone("p",4)},
@@ -1487,7 +1494,7 @@ addLayer("e", {
         },
         23:{
             title(){return player.e.onpointexmode ? "End charging" : "Charge electron into charging points"},
-            display(){return `Add ${format(tmp.e.effofpointexcharge)} effectable electron on charging points.(Based on your electron).`},
+            display(){return `Add ${format(tmp.e.effofpointexcharge)} effectable electron on charging points.(Based on your electron)`},
             style:{"height":"150px","width":"150px","background-color":"#D6D0D5"},
             unlocked(){return hasChallenge("p",32)},
             onClick(){
@@ -1500,7 +1507,7 @@ addLayer("e", {
         },
         31:{
             title(){return player.e.ongenesisexmode ? "End charging" : "Charge electron into genesis base"},
-            display(){return `Add ${format(tmp.e.effofgenesisexcharge)} to genesis gain base.(Based on your electron).`},
+            display(){return `Add ${format(tmp.e.effofgenesisexcharge)} to genesis gain base.(Based on your electron)`},
             style:{"height":"150px","width":"150px","background-color":"#FFFFFF"},
             unlocked(){return hasChallenge("p",41)},
             onClick(){
@@ -1513,7 +1520,7 @@ addLayer("e", {
         },
         32:{
             title(){return player.e.onquarkexmode ? "End charging" : "Charge electron into quark base"},
-            display(){return `Add ${format(tmp.e.effofquarkexcharge)} to genesis gain base.(Based on your electron).`},
+            display(){return `Add ${format(tmp.e.effofquarkexcharge)} to quark gain base.(Based on your electron)`},
             style:{"height":"150px","width":"150px","background-color":"#AA2002"},
             unlocked(){return hasChallenge("p",41)},
             onClick(){
@@ -1526,7 +1533,7 @@ addLayer("e", {
         },
         33:{
             title(){return player.e.onelectronmode ? "End charging" : "Charge electron into itself"},
-            display(){return `Divide electron price by ${format(tmp.e.effofelectroncharge)}.(Based on your electron).`},
+            display(){return `Divide electron price by ${format(tmp.e.effofelectroncharge)}.(Based on your electron)`},
             style:{"height":"150px","width":"150px","background-color":"#ECEC4E"},
             unlocked(){return hasChallenge("p",41)},
             onClick(){
@@ -1544,12 +1551,13 @@ addLayer("n", {
     symbol: "N", // This appears on the layer's node. Default is the id with the first letter capitalized
     position: 2, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
     startData() { return {
-        unlocked: false,
+        unlocked: true,
 		points: new Decimal(0),
         score: new Decimal(0),
+        c11eff: new Decimal(1),
     }},
     color: "#EF1111",
-    requires: new Decimal(1e230), // Can be a function that takes requirement increases into account
+    requires: new Decimal("1e230"), // Can be a function that takes requirement increases into account
     resource: "neutron", // Name of prestige currency
     baseResource: "quark", // Name of resource prestige is based on
     baseAmount() {return player.q.points}, // Get the current amount of baseResource
@@ -1561,6 +1569,7 @@ addLayer("n", {
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         if (hasUpgrade("n",12)) mult = mult.times(upgradeEffect("n",12))
+        if (hasChallenge("n",11)) mult = mult.times(3)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -1580,8 +1589,11 @@ addLayer("n", {
     "blank",
     "upgrades",
     "blank",
+    ["display-text",
+    function() {return hasUpgrade("n",25) ? "Every neutron challenge is the harder version of its proton challenge!" : ""},
+        {}],
     "challenges"],
-    branches:["q"],
+    branches:["q","e"],
     effect() {
         if (!player.n.unlocked) return new Decimal(0)
         let gain = player.q.points.div(1e230).pow(tmp.n.exponent)
@@ -1590,8 +1602,10 @@ addLayer("n", {
         return gain
     },
     update(diff) {
+        player.n.unlocked = hasUpgrade("p",95)&&player.q.points.gte(1e230)||player.n.unlocked
         if (player.n.unlocked) player.n.points = player.n.points.plus(tmp.n.effect.times(diff));
         if (player.n.unlocked) player.n.score = tmp.n.getscore
+        if (inChallenge("n",11)) player.n.c11eff = player.n.c11eff.times(player.q.upquark.pow(0.2).add(1).log10().pow(2).add(1).times(diff)).max(1)
     },
     getscore() {
         if (!player.n.unlocked) return new Decimal(0)
@@ -1616,7 +1630,7 @@ addLayer("n", {
             title:"Score to neutron",
             description(){return "Boost neutron gain based on your nuclear score."},
             unlocked(){
-                return true
+                return hasUpgrade("n",11)
             },
             cost(){return new Decimal(10)},
             effect(){return player.n.score.add(1).pow(2).max(1)},
@@ -1626,7 +1640,7 @@ addLayer("n", {
             title:"Score to electron",
             description(){return "Divide electron price based on your nuclear score."},
             unlocked(){
-                return true
+                return hasUpgrade("n",12)
             },
             cost(){return new Decimal(50)},
             effect(){return player.n.score.times(5).pow(10).add(1).log10().pow(4).add(1)},
@@ -1636,7 +1650,7 @@ addLayer("n", {
             title:"Score to score",
             description(){return "Increase nuclear score based on your nuclear score."},
             unlocked(){
-                return true
+                return hasUpgrade("n",13)
             },
             cost(){return new Decimal(70)},
             effect(){return player.n.score.pow(0.35).div(10).pow(0.5).div(5)},
@@ -1644,11 +1658,68 @@ addLayer("n", {
         },
         15:{
             title:"Charmful charge",
-            description(){return "You can charge 4 resources in the same time. \"Proton boost XII\" affects to charmquark."},
+            description(){return "You can charge 4 resources in the same time. \"Proton boost XII\" affects charmquark."},
             unlocked(){
-                return true
+                return hasUpgrade("n",14)
             },
             cost(){return new Decimal(70)},
+        },
+        21:{
+            title:"Charging improve I",
+            description(){return "If you charge electron into charging points, the effect of \"Waiting\" will raised to ^1.8 and improve the formula of this charging."},
+            unlocked(){
+                return hasUpgrade("n",15)
+            },
+            cost(){return new Decimal(100)},
+        },
+        22:{
+            title:"Charging improve II",
+            description(){return "If you charge electron into genesis base, gain ^1.25 genesis and improve the formula of this charging."},
+            unlocked(){
+                return hasUpgrade("n",21)
+            },
+            cost(){return new Decimal(150)},
+        },
+        23:{
+            title:"Charging improve III",
+            description(){return "You can charge 5 resources at the same time."},
+            unlocked(){
+                return hasUpgrade("n",22)
+            },
+            cost(){return new Decimal(230)},
+        },
+        24:{
+            title:"Charging improve IV",
+            description(){return "If you charge electron into quark base, gain ^1.2 quark and improve the formula of this charging."},
+            unlocked(){
+                return hasUpgrade("n",23)
+            },
+            cost(){return new Decimal(30000)},
+        },
+        25:{
+            title:"Electron boost XXI",
+            description(){return "Electron reduce the cost of itself, Unlock a neutron challenge."},
+            unlocked(){
+                return hasUpgrade("n",24)
+            },
+            cost(){return new Decimal(1e6)},
+            effect(){return new Decimal(1).div(player.e.points).times(70).min(1)},
+            effectDisplay(){return `^${format(upgradeEffect("n",25))}`}
+        },
+    },
+    challenges:{
+        11: {
+            name: "True-no idle",
+            challengeDescription() { return "Divides points gain based on your upquark.<br>Currently: /"+format(player.n.c11eff)},
+            canComplete: function() {return player.points.gte("1e520")},
+            goalDescription(){return "1e520 points"},
+            rewardDescription(){return "Triple neutron gain and Unlock a neutron upgrade."},
+            unlocked() {
+                return hasUpgrade("n",25)
+            },
+            onExit() {
+                player.n.c11eff = new Decimal(1)
+            }
         },
     }
 }),
