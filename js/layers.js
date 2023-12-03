@@ -72,7 +72,6 @@ addLayer("g", {
         let rate = 0
         if (hasMilestone("q",0)) rate = 1
         if (hasMilestone("p",2)) rate = 10
-
         if (inChallenge("p",11)) rate = -0.1
         return rate 
     },
@@ -735,6 +734,7 @@ addLayer("p", {
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent() {
         exp = new Decimal(0.142857)
+        if (hasUpgrade("n",32)) exp = exp.add(0.03)
         return exp
     }, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
@@ -1570,6 +1570,8 @@ addLayer("n", {
         mult = new Decimal(1)
         if (hasUpgrade("n",12)) mult = mult.times(upgradeEffect("n",12))
         if (hasChallenge("n",11)) mult = mult.times(3)
+        if (hasUpgrade("n",31)) mult = mult.times(upgradeEffect("n",31))
+        if (hasUpgrade("n",32)) mult = mult.times(upgradeEffect("n",32))
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -1705,6 +1707,26 @@ addLayer("n", {
             cost(){return new Decimal(1e6)},
             effect(){return new Decimal(1).div(player.e.points).times(70).min(1)},
             effectDisplay(){return `^${format(upgradeEffect("n",25))}`}
+        },
+        31:{
+            title:"Neutron boost I",
+            description(){return "Genesis boost neutron gain"},
+            unlocked(){
+                return hasChallenge("n",11)
+            },
+            cost(){return new Decimal(5e6)},
+            effect(){return player.g.points.add(1).ln().pow(0.25).add(1).ln().add(1).pow(3).max(1)},
+            effectDisplay(){return `x${format(upgradeEffect("n",31))}`}
+        },
+        32:{
+            title:"Neutron boost II",
+            description(){return "Quark boost neutron gain, add 0.03 to proton gain base."},
+            unlocked(){
+                return hasChallenge("n",11)
+            },
+            cost(){return new Decimal(5e7)},
+            effect(){return player.q.points.add(1).ln().pow(0.3).add(1).ln().add(1).pow(2).max(1)},
+            effectDisplay(){return `x${format(upgradeEffect("n",32))}`}
         },
     },
     challenges:{
