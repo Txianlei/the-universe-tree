@@ -8,7 +8,7 @@ let modInfo = {
 	discordName: "",
 	discordLink: "",
 	initialStartPoints: new Decimal(1), // Used for hard resets and new players
-	offlineLimit: 1,  // In hours
+	offlineLimit: 0,  // In hours
 }
 
 // Set your version in num and name
@@ -34,7 +34,7 @@ function getStartPoints(){
 
 // Determines if it should show points/sec
 function canGenPoints(){
-	return hasUpgrade("g",11)
+	return hasUpgrade("g",11)&&(!inChallenge("n",41))
 }
 
 // Calculate points/sec!
@@ -46,6 +46,7 @@ function getPointGen() {
 	if (hasUpgrade("g",12)) gain = gain.add(0.02)
 	if (hasUpgrade("g",13)) gain = gain.add(0.05)
 	if (hasUpgrade("g",14)) gain = gain.add(upgradeEffect("g",14))
+	if (hasUpgrade("n",71)) gain = gain.add(upgradeEffect("n",71))
 
 	//MULT
 	if (hasUpgrade("g",21)) gain = gain.times(2)
@@ -59,14 +60,20 @@ function getPointGen() {
 	if (hasUpgrade("p",21)) gain = gain.times(upgradeEffect("p",21))
 	if (hasUpgrade("p",51)) gain = gain.times(upgradeEffect("p",51))
 	if (hasUpgrade("p",72) && player.e.onpointmode) gain = gain.times(upgradeEffect("g",14).add(1))
+	if (hasUpgrade("n",43)) gain = gain.times(upgradeEffect("n",43))
+	if (hasUpgrade("n",84)) gain = gain.times(upgradeEffect("n",84))
 	if (inChallenge("n",11)) gain = gain.div(player.n.c11eff)
+	if (inChallenge("n",32)) gain = gain.div(player.g.nc32eff)
 	if (player.q.unlocked) gain = gain.times(tmp.q.powerEffofu)
 
 
 	//POWER
 	if(hasUpgrade("q",41)) gain = gain.pow(1.15)
+	if (hasUpgrade("n",54)) gain = gain.pow(1.03)
 	if(hasUpgrade("p",34)) gain = gain.pow(1.1)
 	if(inChallenge("p",31)) gain = gain.pow(0.666)
+	if(inChallenge("n",22)) gain = gain.pow(0.175)
+	if(inChallenge("n",32)) gain = gain.pow(0.05)
 	if (player.e.onpointmode) gain = gain.pow(tmp.e.effofpointcharge)
 
 	return gain
