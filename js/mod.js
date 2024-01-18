@@ -1,5 +1,5 @@
 let modInfo = {
-	name: "A piece of s**t",
+	name: "The universe tree",
 	id: "mymod",
 	author: "user incremental",
 	pointsName: "points",
@@ -8,19 +8,42 @@ let modInfo = {
 	discordName: "",
 	discordLink: "",
 	initialStartPoints: new Decimal(1), // Used for hard resets and new players
-	offlineLimit: 0,  // In hours
+	offlineLimit: 0.1,  // In hours
 }
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0",
-	name: "Literally nothing",
+	num: "0.2.0",
+	name: "Atom update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.0</h3><br>
-		- Added things.<br>
-		- Added stuff.`
+	<h2>Current Endgame: I don't know</h2>
+	<h3> 0.2.0 </h3>
+		-Added atom
+	<h3> 0.1.7 </h3>
+		-Added neutron
+		-Added more charge
+		-Added neutron challenges
+		-Added 45 neutron upgrades
+	<h3> 0.1.3 </h3>
+		-Added electron
+		-Added charge
+		-Added more proton challenges and milestones
+		-Added 35 proton upgrades
+	<h3> 0.1.0 </h3>
+		-Added Achievement system
+		-Added proton
+		-Added proton challenges and milestones
+		-Added 10 proton upgrades
+	<h3> 0.0.3 </h3>
+		-Added quark
+		-Added 30 quark upgrades
+	<h3> 0.0.2 </h3>
+		-Added genesis
+		-Added 15 genesis upgrades
+
+`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -71,6 +94,7 @@ function getPointGen() {
 	if(hasUpgrade("q",41)) gain = gain.pow(1.15)
 	if (hasUpgrade("n",54)) gain = gain.pow(1.03)
 	if(hasUpgrade("p",34)) gain = gain.pow(1.1)
+	if(hasUpgrade("at",51)) gain = gain.pow(1.01)
 	if(inChallenge("p",31)) gain = gain.pow(0.666)
 	if(inChallenge("n",22)) gain = gain.pow(0.175)
 	if(inChallenge("n",32)) gain = gain.pow(0.05)
